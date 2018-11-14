@@ -143,7 +143,8 @@ public class ImagePicker
             bm = getImageResized(context, selectedImage);
             int rotation = getRotation(context, selectedImage, isCamera);
             bm = rotate(bm, rotation);
-        }
+        } else if (resultCode == Activity.RESULT_CANCELED)
+            return null;
         
         return bm;
     }
@@ -160,7 +161,8 @@ public class ImagePicker
             
             actualImage = new File(getAbsolutePathFromUri(
                     imageReturnedIntent.getData(), context));
-        }
+        } else if (resultCode == Activity.RESULT_CANCELED)
+            return null;
         
         return compressImageFile(context, actualImage);
     }

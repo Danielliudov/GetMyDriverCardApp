@@ -38,14 +38,17 @@ public class BaseRequest extends BaseSqlEntity
     @Column(name = "replacement_reason")
     private String replacementReason;
     
+    @NotNull
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "request_details_id", referencedColumnName = "details_id")
     private ApplicantDetails applicantDetails;
     
+    @NotNull
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "request_attachment_id", referencedColumnName = "attachment_id")
     private ImageAttachment imageAttachment;
     
+    @NotNull
     @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "request_user_id", referencedColumnName = "user_id")
     private User user;

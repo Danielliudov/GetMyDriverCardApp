@@ -55,7 +55,8 @@ public class HttpRequestsRepository implements RequestsRepository
     @Override
     public List<BaseRequest> getAllRequestsByUserId(int userId) throws Exception
     {
-        final String url = mRequestsEndpointUrl + "/secured/get/" + userId;
+        final String url = mRequestsEndpointUrl +
+                Constants.Strings.ALL_REQUESTS_SUFFIX + "/" + userId;
         String requestsJson = mHttpRequester.get(url);
         
         return mRequestsJsonParser.fromJsonArray(requestsJson);

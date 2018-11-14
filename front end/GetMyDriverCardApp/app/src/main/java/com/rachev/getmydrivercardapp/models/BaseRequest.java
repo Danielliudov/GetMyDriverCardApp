@@ -1,6 +1,8 @@
 package com.rachev.getmydrivercardapp.models;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class BaseRequest implements Serializable
 {
@@ -95,14 +97,18 @@ public class BaseRequest implements Serializable
         this.applicantDetails = applicantDetails;
     }
     
-    public String getRecordCreationDate()
+    public LocalDateTime getRecordCreationDate()
     {
-        return recordCreationDate;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+      
+        return LocalDateTime.parse(recordCreationDate, dtf);
     }
     
-    public String getLastEditDate()
+    public LocalDateTime getLastEditDate()
     {
-        return lastEditDate;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        
+        return LocalDateTime.parse(lastEditDate, dtf);
     }
     
     public User getUser()

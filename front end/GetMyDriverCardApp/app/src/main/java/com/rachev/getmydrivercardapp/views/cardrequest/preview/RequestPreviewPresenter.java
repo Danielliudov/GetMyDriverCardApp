@@ -15,6 +15,7 @@ public class RequestPreviewPresenter implements RequestPreviewContracts.Presente
 {
     private RequestsService mRequestsService;
     private SchedulerProvider mSchedulerProvider;
+    private RequestPreviewContracts.Navigator mNavigator;
     private RequestPreviewContracts.View mView;
     
     public RequestPreviewPresenter(Context context)
@@ -29,15 +30,9 @@ public class RequestPreviewPresenter implements RequestPreviewContracts.Presente
         mView = view;
     }
     
-    @Override
-    public void unsubscribe()
-    {
-        mView = null;
-    }
-    
     @SuppressLint("CheckResult")
     @Override
-    public void createRequest(BaseRequest baseRequest)
+    public void createRequest(BaseRequest baseRequest, boolean existsAndToBeUpdated)
     {
         mView.showProgressBar();
         Observable.create((ObservableOnSubscribe<BaseRequest>) emitter ->
@@ -50,16 +45,9 @@ public class RequestPreviewPresenter implements RequestPreviewContracts.Presente
                 .subscribeOn(mSchedulerProvider.background())
                 .observeOn(mSchedulerProvider.ui())
                 .doFinally(mView::hideProgressBar)
-                .subscribe(r ->
-                {
-                    if (r != null)
-                        Methods.showCrouton(mView.getActivity(),
-                                "Card request was sent",
-                                Style.CONFIRM, false);
-                    mView.navigateToHome();
-                }, err -> Methods.showCrouton(mView.getActivity(),
-                        err.getMessage(), Style.ALERT,
-                        true));
+                .subscribe(r -> mNavigator.navigateToHome(r, existsAndToBeUpdated),
+                        err -> Methods.showToast(mView.getActivity(),
+                                err.getMessage(), true));
     }
     
     @SuppressLint("CheckResult")
@@ -81,5 +69,11 @@ public class RequestPreviewPresenter implements RequestPreviewContracts.Presente
                         e -> Methods.showCrouton(mView.getActivity(),
                                 e.getMessage(), Style.ALERT,
                                 true));
+    }
+    
+    @Override
+    public void setNavigator(RequestPreviewContracts.Navigator navigator)
+    {
+        mNavigator = navigator;
     }
 }

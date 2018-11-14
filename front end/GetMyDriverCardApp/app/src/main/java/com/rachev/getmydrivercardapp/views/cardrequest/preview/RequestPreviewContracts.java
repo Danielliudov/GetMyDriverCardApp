@@ -21,22 +21,24 @@ public interface RequestPreviewContracts
         
         void setTextViews();
         
-        void navigateToHome();
+        void setExtraTextViews();
+        
+        void navigateToHome(BaseRequest request, boolean existsAndToBeUpdated);
     }
     
     interface Presenter
     {
         void subscribe(View view);
-        
-        void unsubscribe();
     
-        void createRequest(BaseRequest baseRequest);
+        void createRequest(BaseRequest baseRequest, boolean existsAndToBeUpdated);
     
         void updateStatus(BaseRequest baseRequest);
+        
+        void setNavigator(Navigator navigator);
     }
     
     interface Navigator
     {
-        void navigateToHome();
+        void navigateToHome(BaseRequest request, boolean existsAndToBeUpdated);
     }
 }

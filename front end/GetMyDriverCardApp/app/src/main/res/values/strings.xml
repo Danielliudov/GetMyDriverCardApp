@@ -44,5 +44,7 @@
     <string name="my_profile">My Profile</string>
     <string name="logout">Logout</string>
     <string name="provide_a_relevant_facial_photo">Provide a relevant facial photo</string>
-    <string name="request_status">Request status:</string>
+    <string name="request_status">Request status: </string>
+    <string name="test">Test</string>
+    <string name="additional_info">Additional info</string>
 </resources>

@@ -23,7 +23,6 @@ import com.rachev.getmydrivercardapp.models.User;
 import com.rachev.getmydrivercardapp.utils.Methods;
 import com.rachev.getmydrivercardapp.utils.enums.RequestStatus;
 import com.rachev.getmydrivercardapp.views.cardrequest.preview.RequestPreviewActivity;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 import java.util.List;
 
@@ -74,7 +73,7 @@ public class RequestsListsActivity extends AppCompatActivity implements AdapterV
         
         mCurrentUser = (User) getIntent().getSerializableExtra("user");
         
-        if (!mCurrentUser.getRoles().contains(new Role(1, "ROLE_ADMIN")))
+        if (!mCurrentUser.getRoles().contains(new Role(2, "admin")))
             FirebaseMessaging.getInstance().subscribeToTopic(mCurrentUser.getUsername());
         
         if (mCurrentUser.getRoles().size() == 2)
@@ -123,21 +122,10 @@ public class RequestsListsActivity extends AppCompatActivity implements AdapterV
         
         mPresenter.subscribe(this);
         
-        if (mCustomAdapter.getItemCount() > 0)
-            return;
-        
         if (mCurrentUser.getRoles().size() == 2)
             mPresenter.loadAllRequests();
         else
             mPresenter.loadUserSpecificRequests(mCurrentUser.getId());
-    }
-    
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        
-        mPresenter.unsubscribe();
     }
     
     @Override
@@ -189,8 +177,8 @@ public class RequestsListsActivity extends AppCompatActivity implements AdapterV
         mSpinnerLayout.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.GONE);
         mEmptyListTextView.setVisibility(View.VISIBLE);
-        Methods.showCrouton(this, "Oops",
-                Style.INFO, false);
+        Methods.showToast(this, "Oops",
+                false);
     }
     
     @Override

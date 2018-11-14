@@ -8,10 +8,8 @@ import com.rachev.getmydrivercardapp.models.User;
 import com.rachev.getmydrivercardapp.services.base.UsersService;
 import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.Methods;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.disposables.Disposable;
 
 import java.io.IOException;
 
@@ -36,12 +34,6 @@ public class LoginPresenter implements LoginContracts.Presenter
     }
     
     @Override
-    public void unsubscribe()
-    {
-        mView = null;
-    }
-    
-    @Override
     public void setNavigator(LoginContracts.Navigator navigator)
     {
         mNavigator = navigator;
@@ -52,49 +44,47 @@ public class LoginPresenter implements LoginContracts.Presenter
     @Override
     public void createUser(final User user)
     {
-        if (mView != null)
-            mView.showProgressBar();
-        Disposable disposable = Observable.create((ObservableOnSubscribe<User>) emitter ->
+        Observable.create((ObservableOnSubscribe<User>) emitter ->
         {
-            try
-            {
-                User userToAdd = mUsersService.create(user);
-                
-                if (userToAdd == null)
-                    throw new IllegalArgumentException("User already exists");
-                
+            User userToAdd = mUsersService.create(user);
+            
+            if (userToAdd != null)
                 emitter.onNext(userToAdd);
-                emitter.onComplete();
-            } catch (Exception e)
-            {
-                emitter.onError(e);
-            }
+            emitter.onComplete();
         })
                 .subscribeOn(mSchedulerProvider.background())
                 .observeOn(mSchedulerProvider.ui())
-                .doFinally(() -> mView.hideProgressBar())
-                .subscribe(u -> login(u.getUsername(), u.getPassword()),
-                        err ->
-                        {
-                            if (err instanceof IOException)
-                                Methods.showCrouton(mView.getActivity(),
-                                        Constants.Strings.CONNECTION_TO_SERVER_TIMED_OUT,
-                                        Style.ALERT, true);
-                            if (mView != null)
-                                Methods.showCrouton(mView.getActivity(),
-                                        err.getMessage(), Style.ALERT,
-                                        true);
-                        });
+                .doFinally(mView::dismissSignupDialog)
+                .subscribe(u ->
+                {
+                    if (u != null)
+                    {
+                        Methods.showToast(mView.getActivity(),
+                                Constants.Strings.USER_SIGNED_UP,
+                                true);
+                        mNavigator.navigateToHome(u);
+                    }
+                }, err ->
+                {
+                    if (err instanceof IOException)
+                        Methods.showToast(mView.getActivity(),
+                                Constants.Strings.CONNECTION_TO_SERVER_TIMED_OUT,
+                                true);
+                    else
+                        Methods.showToast(mView.getActivity(),
+                                err.getMessage(), true);
+                });
     }
     
+    @SuppressLint("CheckResult")
     @Override
     public void login(String username, String password)
     {
         if (username.isEmpty() || password.isEmpty())
         {
-            Methods.showCrouton(mView.getActivity(),
+            Methods.showToast(mView.getActivity(),
                     Constants.Strings.NOT_ALL_FIELDS_FILLED,
-                    Style.ALERT, true);
+                    true);
             return;
         }
         
@@ -103,9 +93,8 @@ public class LoginPresenter implements LoginContracts.Presenter
                 Constants.Strings.USER_ME_SUFFIX;
         
         mView.showProgressBar();
-        Disposable disposable = Observable.create((ObservableOnSubscribe<User>) emitter ->
+        Observable.create((ObservableOnSubscribe<User>) emitter ->
         {
-            
             User currentUser = mUsersService.login(username, password);
             
             if (currentUser == null)
@@ -113,22 +102,25 @@ public class LoginPresenter implements LoginContracts.Presenter
             
             emitter.onNext(currentUser);
             emitter.onComplete();
-            
         })
                 .subscribeOn(mSchedulerProvider.background())
                 .observeOn(mSchedulerProvider.ui())
                 .doFinally(mView::hideProgressBar)
-                .subscribe(user -> mView.navigateToHome(user),
+                .subscribe(u ->
+                        {
+                            if (u != null)
+                                mNavigator.navigateToHome(u);
+                        },
                         e ->
                         {
                             if (e instanceof IllegalArgumentException)
-                                Methods.showCrouton(mView.getActivity(),
-                                        Constants.Strings.INCORRECT_CREDENTIALS,
-                                        Style.ALERT, true);
+                                Methods.showToast(mView.getActivity(),
+                                        e.getMessage(),
+                                        true);
                             else if (e instanceof IOException)
-                                Methods.showCrouton(mView.getActivity(),
+                                Methods.showToast(mView.getActivity(),
                                         Constants.Strings.CONNECTION_TO_SERVER_TIMED_OUT,
-                                        Style.ALERT, true);
+                                        true);
                         });
     }
 }

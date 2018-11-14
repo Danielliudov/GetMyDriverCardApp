@@ -61,7 +61,7 @@ dependencies {
         exclude group: 'com.google.android', module: 'support-v4'
     }
 
-    implementation 'com.google.firebase:firebase-core:15.0.2'
+    implementation 'com.google.firebase:firebase-core:16.0.5'
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
 
     implementation "com.github.mklimek:ssl-utils-android:1.0.1"

@@ -27,8 +27,6 @@ public interface RequestsListsContracts
     interface Presenter
     {
         void subscribe(View view);
-        
-        void unsubscribe();
     
         void loadAllRequests();
         

@@ -15,10 +15,11 @@ import com.rachev.getmydrivercardapp.models.BaseRequest;
 import com.rachev.getmydrivercardapp.utils.Methods;
 import com.rachev.getmydrivercardapp.utils.enums.RequestStatus;
 import com.rachev.getmydrivercardapp.views.home.HomeActivity;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class RequestPreviewActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
-        RequestPreviewContracts.View, RequestPreviewContracts.Navigator
+public class RequestPreviewActivity extends AppCompatActivity
+        implements AdapterView.OnItemSelectedListener,
+        RequestPreviewContracts.View,
+        RequestPreviewContracts.Navigator
 {
     private static BaseRequest mFinalRequest;
     private RequestPreviewContracts.Presenter mPresenter;
@@ -56,6 +57,21 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
     @BindView(R.id.email_text)
     TextView mEmailText;
     
+    @BindView(R.id.extra_details_view)
+    LinearLayout mExtraDetailsLayout;
+    
+    @BindView(R.id.extra_details_renewal_view)
+    LinearLayout mExtraDetailsRenewalLayout;
+    
+    @BindView(R.id.extra_details_replacement_view)
+    LinearLayout mExtraDetailsReplacementLayout;
+    
+    @BindView(R.id.renewal_reason_text)
+    TextView mRenewalReasonText;
+    
+    @BindView(R.id.replacement_reason_text)
+    TextView mReplacementReasonText;
+    
     @BindView(R.id.applicant_selfie_img)
     ImageView mSelfieImage;
     
@@ -82,8 +98,9 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
         setTitle("Preview");
         
         ButterKnife.bind(this);
-    
         setPresenter(new RequestPreviewPresenter(this));
+        mPresenter.setNavigator(this);
+        
         if (!getIntent().getBooleanExtra("isOriginList", false))
         {
             mFinalRequest = (BaseRequest) getIntent().getSerializableExtra("request");
@@ -95,7 +112,7 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
                 mFinalRequest.getImageAttachment().setPrevDriverCardImage(
                         Methods.encodeBitmapToBase64String(getIntent().getStringExtra("path3")));
             
-            mSendButton.setOnClickListener(v -> mPresenter.createRequest(mFinalRequest));
+            mSendButton.setOnClickListener(v -> mPresenter.createRequest(mFinalRequest, false));
         } else
         {
             mSendButton.setVisibility(View.GONE);
@@ -114,6 +131,7 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
         }
         
         setTextViews();
+        setExtraTextViews();
         setImageViews();
     }
     
@@ -123,14 +141,6 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
         super.onResume();
         
         mPresenter.subscribe(this);
-    }
-    
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        
-        mPresenter.unsubscribe();
     }
     
     @SuppressLint("SimpleDateFormat")
@@ -145,6 +155,24 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
         mAddressText.setText(String.format("Address: %s", mFinalRequest.getApplicantDetails().getAddress()));
         mPhoneNumText.setText(String.format("Phone number: %s", mFinalRequest.getApplicantDetails().getPhoneNumber()));
         mEmailText.setText(String.format("Email: %s", mFinalRequest.getApplicantDetails().getEmail()));
+    }
+    
+    @Override
+    public void setExtraTextViews()
+    {
+        if (!mFinalRequest.getType().equals("new"))
+        {
+            mExtraDetailsLayout.setVisibility(View.VISIBLE);
+            if (mFinalRequest.getType().equals("replace"))
+            {
+                mExtraDetailsReplacementLayout.setVisibility(View.VISIBLE);
+                mReplacementReasonText.setText(String.format("Replacement reason: %s", mFinalRequest.getReplacementReason()));
+            } else if (mFinalRequest.getType().equals("renewal"))
+            {
+                mExtraDetailsRenewalLayout.setVisibility(View.VISIBLE);
+                mRenewalReasonText.setText(String.format("Renewal reason: %s", mFinalRequest.getRenewalReason()));
+            }
+        }
     }
     
     @Override
@@ -221,13 +249,16 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
     {
-        String status = "Request status: " + parent.getItemAtPosition(position).toString();
+        String status = "Request status:" + parent.getItemAtPosition(position).toString();
         String lastKnownStatus = mAdminPanelStatusText.getText().toString();
         
         if (status.equals(lastKnownStatus))
-            Methods.showCrouton(this,
+        {
+            Methods.showToast(this,
                     "Request already has the same status",
-                    Style.ALERT, false);
+                    false);
+            return;
+        }
         
         mAdminPanelStatusText.setText(String.format(
                 "Request status: %s", parent.getItemAtPosition(position)));
@@ -245,7 +276,7 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
                 break;
         }
         
-        mPresenter.updateStatus(mFinalRequest);
+        mPresenter.createRequest(mFinalRequest, true);
     }
     
     @Override
@@ -255,10 +286,23 @@ public class RequestPreviewActivity extends AppCompatActivity implements Adapter
     }
     
     @Override
-    public void navigateToHome()
+    public void navigateToHome(BaseRequest request, boolean existsAndToBeUpdated)
     {
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        if (request != null)
+        {
+            if (existsAndToBeUpdated)
+            {
+                Methods.showToast(getApplicationContext(),
+                        "Request status updated",
+                        false);
+                finish();
+                return;
+            }
+            
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.putExtra("request_created", true);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
     }
 }

@@ -7,7 +7,6 @@ import com.rachev.getmydrivercardapp.async.base.SchedulerProvider;
 import com.rachev.getmydrivercardapp.models.BaseRequest;
 import com.rachev.getmydrivercardapp.services.base.RequestsService;
 import com.rachev.getmydrivercardapp.utils.Methods;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 
@@ -31,12 +30,6 @@ public class RequestsListsPresenter implements RequestsListsContracts.Presenter
         mView = view;
     }
     
-    @Override
-    public void unsubscribe()
-    {
-        mView = null;
-    }
-    
     @SuppressLint("CheckResult")
     @Override
     public void loadAllRequests()
@@ -53,9 +46,8 @@ public class RequestsListsPresenter implements RequestsListsContracts.Presenter
                 .observeOn(mSchedulerProvider.ui())
                 .doFinally(mView::hideProgressBar)
                 .subscribe(this::presentRequestsToView,
-                        e -> Methods.showCrouton(mView.getActivity(),
-                                e.getMessage(), Style.ALERT,
-                                true));
+                        e -> Methods.showToast(mView.getActivity(),
+                                e.getMessage(), true));
     }
     
     @SuppressLint("CheckResult")
@@ -74,18 +66,21 @@ public class RequestsListsPresenter implements RequestsListsContracts.Presenter
                 .observeOn(mSchedulerProvider.ui())
                 .doFinally(mView::hideProgressBar)
                 .subscribe(this::presentRequestsToView,
-                        e -> Methods.showCrouton(mView.getActivity(),
-                                e.getMessage(), Style.ALERT,
-                                true));
+                        e -> presentRequestsToView(null));
     }
     
     @Override
     public void presentRequestsToView(List<BaseRequest> requestList)
     {
-        if (requestList.isEmpty())
+        if (requestList == null)
             mView.showEmptyRequestList();
         else
-            mView.showRequests(requestList);
+        {
+            if (requestList.isEmpty())
+                mView.showEmptyRequestList();
+            else
+                mView.showRequests(requestList);
+        }
     }
     
     @Override

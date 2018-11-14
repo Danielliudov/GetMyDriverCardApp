@@ -22,8 +22,10 @@ import com.rachev.getmydrivercardapp.utils.Methods;
 import com.rachev.getmydrivercardapp.views.cardrequest.applicantdetails.BaseApplicantDetailsActivity;
 import com.rachev.getmydrivercardapp.views.cardrequest.lists.RequestsListsActivity;
 import com.rachev.getmydrivercardapp.views.login.LoginActivity;
-import de.keyboardsurfer.android.widget.crouton.Style;
-import studios.codelight.smartloginlibrary.*;
+import studios.codelight.smartloginlibrary.LoginType;
+import studios.codelight.smartloginlibrary.SmartLogin;
+import studios.codelight.smartloginlibrary.SmartLoginFactory;
+import studios.codelight.smartloginlibrary.UserSessionManager;
 import studios.codelight.smartloginlibrary.users.SmartFacebookUser;
 import studios.codelight.smartloginlibrary.users.SmartGoogleUser;
 import studios.codelight.smartloginlibrary.users.SmartUser;
@@ -79,8 +81,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         
         if (getIntent().getBooleanExtra("hasLoggedIn", false))
         {
-            Methods.showCrouton(this, Constants.Strings.USER_LOGGED_IN,
-                    Style.CONFIRM, false);
+            Methods.showToast(this,
+                    Constants.Strings.USER_LOGGED_IN,
+                    false);
             mCurrentUser = (User) getIntent().getSerializableExtra("user");
             setTitle("User: " + mCurrentUser.getUsername());
             
@@ -90,8 +93,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         .getChildAt(1))
                         .setText("All Requests");
         }
+        
+        if (getIntent().getBooleanExtra("updated", false))
+            Methods.showToast(getApplicationContext(),
+                    "Request status changed",
+                    false);
+        else
+        {
+            if (getIntent().getBooleanExtra("request_created", false))
+            {
+                Methods.showToast(getApplicationContext(),
+                        "Card request was sent",
+                        false);
+            }
+        }
     }
-    
     
     @Override
     public void onClick(View v)
@@ -253,10 +269,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 smartLogin.logout(getApplicationContext());
                 
                 intent[0] = new Intent(this, LoginActivity.class);
-                intent[0].setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent[0].setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent[0].putExtra("isHomeOrigin", true);
                 intent[0].putExtra("hasLoggedOut", true);
                 startActivity(intent[0]);
+                finish();
                 GetMyDriverCardApplication.getCookieJar(this).clear();
                 break;
             default:
@@ -264,7 +281,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     
-    @SuppressWarnings("deprecation")
+
     private String[] getLostOrStolenExtraDialogData()
     {
         Context context = getApplicationContext();
@@ -273,12 +290,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         
         final EditText dateBox = new EditText(context);
         dateBox.setHint("Date");
-        dateBox.setHintTextColor(getResources().getColor(R.color.primaryColorLime));
+        dateBox.setTextColor(getColor(R.color.primaryColorLime));
+        dateBox.setHintTextColor(getColor(R.color.primaryColorLime));
         layout.addView(dateBox);
         
         final EditText placeBox = new EditText(context);
         placeBox.setHint("Place");
-        placeBox.setHintTextColor(getResources().getColor(R.color.primaryColorLime));
+        dateBox.setTextColor(getColor(R.color.primaryColorLime));
+        placeBox.setHintTextColor(getColor(R.color.primaryColorLime));
         layout.addView(placeBox);
         
         @SuppressLint("HandlerLeak") final Handler handler = new Handler()
@@ -315,7 +334,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         return data;
     }
     
-    @SuppressWarnings("deprecation")
     private String[] getExchangeCardExtraInfo()
     {
         Context context = getApplicationContext();
@@ -324,22 +342,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         
         final EditText issueCountryTachCard = new EditText(context);
         issueCountryTachCard.setHint("Country of tachograph card issuing");
-        issueCountryTachCard.setHintTextColor(getResources().getColor(R.color.primaryColorLime));
+        issueCountryTachCard.setTextColor(getColor(R.color.primaryColorLime));
+        issueCountryTachCard.setHintTextColor(getColor(R.color.primaryColorLime));
         layout.addView(issueCountryTachCard);
         
         final EditText prevTachCardNumber = new EditText(context);
         prevTachCardNumber.setHint("Tachograph card number");
-        prevTachCardNumber.setHintTextColor(getResources().getColor(R.color.primaryColorLime));
+        prevTachCardNumber.setTextColor(getColor(R.color.primaryColorLime));
+        prevTachCardNumber.setHintTextColor(getColor(R.color.primaryColorLime));
         layout.addView(prevTachCardNumber);
         
         final EditText issueCountryDriverLic = new EditText(context);
         issueCountryDriverLic.setHint("Country of driving license issuing");
-        issueCountryDriverLic.setHintTextColor(getResources().getColor(R.color.primaryColorLime));
+        issueCountryDriverLic.setTextColor(getColor(R.color.primaryColorLime));
+        issueCountryDriverLic.setHintTextColor(getColor(R.color.primaryColorLime));
         layout.addView(issueCountryDriverLic);
         
         final EditText drivingLicNumber = new EditText(context);
         drivingLicNumber.setHint("Driving license number");
-        drivingLicNumber.setHintTextColor(getResources().getColor(R.color.primaryColorLime));
+        drivingLicNumber.setTextColor(getColor(R.color.primaryColorLime));
+        drivingLicNumber.setHintTextColor(getColor(R.color.primaryColorLime));
         layout.addView(drivingLicNumber);
         
         @SuppressLint("HandlerLeak") final Handler handler = new Handler()

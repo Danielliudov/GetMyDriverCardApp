@@ -8,7 +8,9 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
+import com.rachev.getmydrivercardapp.R;
 import com.rachev.getmydrivercardapp.models.User;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -48,9 +50,16 @@ public class Methods
     
     public static void showToast(Context context, String message, boolean important)
     {
-        Toast.makeText(context, message,
-                important ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT)
-                .show();
+        Toast toast = Toast.makeText(context, message,
+                important ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
+    
+        View toastView = toast.getView();
+        TextView toastMsg = toastView.findViewById(android.R.id.message);
+        toastMsg.setTextSize(18);
+        toastMsg.setTextColor(context.getColor(R.color.white));
+        toastView.setBackgroundColor(context.getColor(R.color.primaryDarkColorBlueGray));
+        
+        toast.show();
     }
     
     public static void hideKeyboard(Activity activity)

@@ -17,8 +17,6 @@ public interface LoginContracts
         
         void hideProgressBar();
         
-        void performLogin();
-        
         void dismissSignupDialog();
         
         void navigateToHome(User user);
@@ -27,8 +25,6 @@ public interface LoginContracts
     interface Presenter
     {
         void subscribe(View view);
-        
-        void unsubscribe();
         
         void createUser(User user);
         

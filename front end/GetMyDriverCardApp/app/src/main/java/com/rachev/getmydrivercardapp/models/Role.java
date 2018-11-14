@@ -17,6 +17,12 @@ public class Role implements Serializable
         setRoleName(roleName);
     }
     
+    @Override
+    public boolean equals(Object obj)
+    {
+        return ((Role) obj).getRoleName().equals(roleName);
+    }
+    
     public int getId()
     {
         return id;

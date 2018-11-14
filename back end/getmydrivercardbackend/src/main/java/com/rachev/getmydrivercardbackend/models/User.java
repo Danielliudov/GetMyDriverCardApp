@@ -21,7 +21,7 @@ public class User
     private int id;
     
     @Nullable
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
     
     @Nullable

@@ -6,7 +6,8 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -23,7 +24,8 @@ public abstract class BaseSqlEntity
     
     public BaseSqlEntity()
     {
-        recordCreationDate = LocalDate.now().toString();
-        recordLastEditedDate = LocalDate.now().toString();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        recordCreationDate = dtf.format(LocalDateTime.now());
+        recordLastEditedDate = dtf.format(LocalDateTime.now());
     }
 }

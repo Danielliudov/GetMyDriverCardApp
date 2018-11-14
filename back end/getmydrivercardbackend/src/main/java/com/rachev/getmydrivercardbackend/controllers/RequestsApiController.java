@@ -38,8 +38,8 @@ public class RequestsApiController
         return requestsService.getAll();
     }
     
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping("/secured/get/{id}")
+    @PreAuthorize("hasAnyRole('USER')")
+    @GetMapping("/getAll/{id}")
     public List<BaseRequest> getAllRequestsById(@PathVariable int id)
     {
         return requestsService.getAllByUserId(id);
@@ -60,7 +60,7 @@ public class RequestsApiController
     }
     
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping("/secured/update/")
+    @PutMapping("/secured/update")
     public ResponseEntity<String> updateRequestStatus(@RequestBody BaseRequest baseRequest)
     {
         requestsService.updateRequestStatus(baseRequest.getId(), baseRequest.getStatus());

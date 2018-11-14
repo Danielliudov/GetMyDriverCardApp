@@ -126,6 +126,26 @@
                 android:textColorHint="@color/primaryDarkColorLime"
                 android:inputType="textEmailAddress" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    android:layout_marginEnd="7dp"
+                    android:background="@drawable/round_button_cyan"
+                    android:text="@string/test"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    tools:ignore="ButtonStyle" />
+
                 <Button
                     android:id="@+id/btn_next"
                     android:layout_width="wrap_content"
@@ -133,10 +153,15 @@
                     android:layout_gravity="center"
                     android:paddingEnd="8dp"
                     android:paddingStart="8dp"
+                    android:layout_marginStart="7dp"
                     android:background="@drawable/round_button_cyan"
                     android:text="@string/next"
                     android:textColor="@color/white"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:ignore="ButtonStyle" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 

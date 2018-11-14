@@ -17,16 +17,19 @@ import butterknife.ButterKnife;
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.rachev.getmydrivercardapp.R;
+import com.rachev.getmydrivercardapp.models.Role;
 import com.rachev.getmydrivercardapp.models.User;
 import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.Methods;
 import com.rachev.getmydrivercardapp.views.home.HomeActivity;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import studios.codelight.smartloginlibrary.*;
 import studios.codelight.smartloginlibrary.users.SmartFacebookUser;
 import studios.codelight.smartloginlibrary.users.SmartGoogleUser;
 import studios.codelight.smartloginlibrary.users.SmartUser;
 import studios.codelight.smartloginlibrary.util.SmartLoginException;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 public class LoginActivity extends AppCompatActivity implements
         View.OnClickListener, SmartLoginCallbacks, LoginContracts.View, LoginContracts.Navigator
@@ -36,7 +39,6 @@ public class LoginActivity extends AppCompatActivity implements
     private SmartLogin mSmartLogin;
     private AlertDialog mAlertDialog;
     private LoginContracts.Presenter mPresenter;
-    private LoginContracts.Navigator mNavigator;
     private AwesomeValidation mAwesomeValidation;
     private User mUser;
     private static long mBackPressedTimes;
@@ -85,6 +87,13 @@ public class LoginActivity extends AppCompatActivity implements
         mCustomSignupButton.setOnClickListener(this);
         mGoogleLoginButton.setOnClickListener(this);
         mFacebookLoginButton.setOnClickListener(this);
+        
+        mCurrentUser = UserSessionManager.getCurrentUser(this);
+        
+        if (getIntent().getBooleanExtra("hasLoggedOut", false))
+            Methods.showToast(this,
+                    Constants.Strings.USER_LOGGED_OUT,
+                    false);
     }
     
     @Override
@@ -94,9 +103,9 @@ public class LoginActivity extends AppCompatActivity implements
             super.onBackPressed();
         else
         {
-            Methods.showCrouton(this,
+            Methods.showToast(this,
                     Constants.Strings.SECOND_BACK_PRESS_TO_EXIT,
-                    Style.INFO, false);
+                    false);
             mBackPressedTimes = System.currentTimeMillis();
         }
     }
@@ -107,28 +116,25 @@ public class LoginActivity extends AppCompatActivity implements
         super.onResume();
         
         mPresenter.subscribe(this);
-        mCurrentUser = UserSessionManager.getCurrentUser(this);
-    }
-    
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        
-        mPresenter.unsubscribe();
     }
     
     @Override
     public void onLoginSuccess(SmartUser user)
     {
         if (user instanceof SmartGoogleUser || user instanceof SmartFacebookUser)
-            mPresenter.createUser(Methods.getUserFromSmartUser(user));
+        {
+            User currentUser = Methods.getUserFromSmartUser(user);
+            currentUser.setRoles(new HashSet<>(Collections.singletonList(
+                    new Role(1, "user"))));
+            mPresenter.createUser(currentUser);
+            navigateToHome(currentUser);
+        }
     }
     
     @Override
     public void onLoginFailure(SmartLoginException e)
     {
-        Methods.showCrouton(this, e.getMessage(), Style.ALERT, true);
+        Methods.showToast(this, e.getMessage(), true);
     }
     
     @Override
@@ -240,16 +246,10 @@ public class LoginActivity extends AppCompatActivity implements
     }
     
     @Override
-    public void performLogin()
-    {
-        mSmartLogin = SmartLoginFactory.build(LoginType.CustomLogin);
-        mSmartLogin.login(mSmartLoginConfig);
-    }
-    
-    @Override
     public void dismissSignupDialog()
     {
-        mAlertDialog.dismiss();
+        if (mAlertDialog != null)
+            mAlertDialog.dismiss();
     }
     
     @Override
@@ -266,11 +266,6 @@ public class LoginActivity extends AppCompatActivity implements
         mPresenter = presenter;
     }
     
-    public void setNavigator(LoginContracts.Navigator navigator)
-    {
-        mNavigator = navigator;
-    }
-    
     @Override
     public void navigateToHome(User user)
     {
@@ -279,5 +274,6 @@ public class LoginActivity extends AppCompatActivity implements
         intent.putExtra("user", user);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+        finish();
     }
 }

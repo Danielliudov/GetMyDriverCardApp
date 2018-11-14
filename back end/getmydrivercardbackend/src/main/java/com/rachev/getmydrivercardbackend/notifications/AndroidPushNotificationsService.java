@@ -1,7 +1,5 @@
 package com.rachev.getmydrivercardbackend.notifications;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Service;

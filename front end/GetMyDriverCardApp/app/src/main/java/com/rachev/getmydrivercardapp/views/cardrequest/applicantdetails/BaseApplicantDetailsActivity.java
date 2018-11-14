@@ -21,7 +21,6 @@ import com.rachev.getmydrivercardapp.models.ApplicantDetails;
 import com.rachev.getmydrivercardapp.models.BaseRequest;
 import com.rachev.getmydrivercardapp.models.User;
 import com.rachev.getmydrivercardapp.utils.Methods;
-import com.rachev.getmydrivercardapp.utils.enums.Reasons;
 import com.rachev.getmydrivercardapp.utils.enums.RequestStatus;
 import com.rachev.getmydrivercardapp.views.photos.SelfiePickingActivity;
 
@@ -34,8 +33,8 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
 {
     private AwesomeValidation mAwesomeValidation;
     private RequestStatus mRequestStatus;
-    private Reasons.Renewal mRenewalReason;
-    private Reasons.Replacement mReplacementReason;
+    private String mRenewalReason;
+    private String mReplacementReason;
     private String mTachCardIssuingCountry;
     private String mTachCardNumber;
     private String mDrivingLicIssuingCountry;
@@ -70,6 +69,9 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
     @BindView(R.id.email_edittext)
     EditText mEmailEditText;
     
+    @BindView(R.id.btn_test)
+    Button mTestButton;
+    
     @BindView(R.id.btn_next)
     Button mNextButton;
     
@@ -85,6 +87,7 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
         mAwesomeValidation = new AwesomeValidation(ValidationStyle.UNDERLABEL);
         mAwesomeValidation.setContext(this);
         
+        mTestButton.setOnClickListener(this);
         mNextButton.setOnClickListener(this);
         
         addValidations(this);
@@ -97,12 +100,11 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
             case "new":
                 break;
             case "renew":
-                this.mRenewalReason = Reasons.Renewal.valueOf(
-                        getIntent().getStringExtra("renewal_reason"));
+                this.mRenewalReason = getIntent().getStringExtra("renewal_reason");
                 break;
             case "replace":
                 String replacementReason = getIntent().getStringExtra("replacement_reason");
-                this.mReplacementReason = Reasons.Replacement.valueOf(replacementReason);
+                this.mReplacementReason = replacementReason;
                 
                 if (replacementReason.equals("exchange_for_bg_card"))
                 {
@@ -183,11 +185,22 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
         }, "Birthdate should be like Day/Month/Year, and must be >= 18");
     }
     
+    @SuppressLint("SetTextI18n")
     @Override
     public void onClick(View v)
     {
         switch (v.getId())
         {
+            case R.id.btn_test:
+                mEgnEditText.setText("9703280484");
+                mBirthdateEditText.setText("28/03/1997");
+                mFirstNameEditText.setText("Ivan");
+                mMiddleNameEditText.setText("Rumenov");
+                mLastNameEditText.setText("Rachev");
+                mAddressEditText.setText("Burgas, Bulgaria");
+                mEmailEditText.setText("ivan.rachev97@gmail.com");
+                mPhoneNumberEditText.setText("0887013851");
+                break;
             case R.id.btn_next:
                 if (mAwesomeValidation.validate())
                 {
@@ -209,9 +222,9 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
                             details);
                     
                     if (mRenewalReason != null)
-                        baseRequest.setRenewalReason(mRenewalReason.toString());
+                        baseRequest.setRenewalReason(mRenewalReason);
                     if (mReplacementReason != null)
-                        baseRequest.setReplacementReason(mReplacementReason.toString());
+                        baseRequest.setReplacementReason(mReplacementReason);
                     baseRequest.setTachCardIssuingCountry(mTachCardIssuingCountry);
                     baseRequest.setTachCardNumber(mTachCardNumber);
                     baseRequest.setDrivingLicIssuingCountry(mDrivingLicIssuingCountry);

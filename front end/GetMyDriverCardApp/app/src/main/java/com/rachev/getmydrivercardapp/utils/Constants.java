@@ -26,7 +26,7 @@ public class Constants
     
     public class Strings
     {
-        public static final String BASE_SERVER_URL = "http://192.168.0.101:8080/api";
+        public static final String BASE_SERVER_URL = "http://192.168.0.102:9090/api";
         
         public static final String FIREBASE_TOKEN = "cfpNjsjN5dU:APA91bG1FQaSX_" +
                 "qgyeMX7ETlx23A9O1j8rEL0ccL7cWDK2ig4ybd0AdlUwD5xm1b8l0IMDUjSvpf7NN" +
