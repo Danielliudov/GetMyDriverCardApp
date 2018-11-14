@@ -6,7 +6,7 @@ use getmydrivercard;
 create table users
 (
 	user_id int not null auto_increment primary key,
-    username varchar(50) not null,
+    username varchar(50) not null unique key,
     password varchar(255) default null,
     facebook_id varchar(255) default null,
     google_id varchar(255) default null
@@ -47,8 +47,7 @@ create table attachments
     user_id_card_pic longtext default null,
     signature_screenshot longtext not null,
     driver_lic_pic longtext default null,
-    prev_driver_card_pic longtext default null,
-    prev_foreign_card_pic longtext default null
+    prev_driver_card_pic longtext default null
 );
 
 create table card_requests
