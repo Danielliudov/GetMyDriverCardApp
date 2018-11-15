@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class CustomUserDetailsService implements UsersService
 {
-    private static final int USER_ROLE_ID = 2;
+    private static final int USER_ROLE_ID = 1;
     
     private final UsersRepository usersRepository;
     private final RoleRepository roleRepository;

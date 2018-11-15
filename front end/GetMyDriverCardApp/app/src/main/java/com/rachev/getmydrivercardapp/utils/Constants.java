@@ -28,13 +28,7 @@ public class Constants
     {
         public static final String BASE_SERVER_URL = "http://192.168.0.102:9090/api";
         
-        public static final String FIREBASE_TOKEN = "cfpNjsjN5dU:APA91bG1FQaSX_" +
-                "qgyeMX7ETlx23A9O1j8rEL0ccL7cWDK2ig4ybd0AdlUwD5xm1b8l0IMDUjSvpf7NN" +
-                "0CfdQUhLS4cztEB_-iSvh3hXX2p5COIqrDnnTDC7QhbovqXB9gxrTK3yet9ob";
-        
         public static final String ADMIN_CHANNEL_ID = "admin_channel";
-        
-        public static final String NOTIFICATION_ID_EXTRA = "notification_id";
         
         public static final String USERS_URL_SUFFIX = "/users";
         public static final String USER_ME_SUFFIX = "/me";

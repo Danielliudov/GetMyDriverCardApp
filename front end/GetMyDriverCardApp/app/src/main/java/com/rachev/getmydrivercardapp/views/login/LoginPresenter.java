@@ -51,6 +51,7 @@ public class LoginPresenter implements LoginContracts.Presenter
             
             if (userToAdd != null)
                 emitter.onNext(userToAdd);
+            
             emitter.onComplete();
         })
                 .subscribeOn(mSchedulerProvider.background())

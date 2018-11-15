@@ -130,6 +130,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener
                 mLogoutButton.performClick();
                 break;
             case R.id.my_profile_button:
+                Methods.showCrouton(this, "WIP", Style.INFO, false);
                 break;
             case R.id.new_request_button:
                 String[] choiceList = {"New", "Renew", "Replace"};
