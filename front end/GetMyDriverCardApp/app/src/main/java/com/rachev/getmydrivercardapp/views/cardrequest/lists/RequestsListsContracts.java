@@ -13,6 +13,8 @@ public interface RequestsListsContracts
         
         Activity getActivity();
         
+        void finalizeStatusChange(BaseRequest baseRequest);
+        
         void showProgressBar();
         
         void hideProgressBar();
@@ -31,6 +33,8 @@ public interface RequestsListsContracts
         void loadAllRequests();
         
         void loadUserSpecificRequests(int userId);
+        
+        void updateRequestStatus(BaseRequest request);
         
         void presentRequestsToView(List<BaseRequest> requestList);
     

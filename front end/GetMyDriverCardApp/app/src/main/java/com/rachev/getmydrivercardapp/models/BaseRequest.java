@@ -1,5 +1,8 @@
 package com.rachev.getmydrivercardapp.models;
 
+import android.graphics.Color;
+import com.rachev.getmydrivercardapp.utils.enums.RequestStatus;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,19 +12,13 @@ public class BaseRequest implements Serializable
     private int id;
     private String type;
     private String status;
-    private String renewalReason;
-    private String replacementReason;
     private User user;
+    private CardReplacementsDetails replacementDetails;
+    private CardRenewalsDetails renewalDetails;
     private ApplicantDetails applicantDetails;
     private ImageAttachment imageAttachment;
     private String recordCreationDate;
     private String lastEditDate;
-    private String tachCardIssuingCountry;
-    private String tachCardNumber;
-    private String drivingLicIssuingCountry;
-    private String drivingLicNumber;
-    private String replacementIncidentDate;
-    private String replacementIncidentPlace;
     
     public BaseRequest()
     {
@@ -33,8 +30,6 @@ public class BaseRequest implements Serializable
         setType(type);
         setStatus(status);
         setApplicantDetails(applicantDetails);
-        setRenewalReason(null);
-        setReplacementReason(null);
     }
     
     public int getId()
@@ -67,26 +62,6 @@ public class BaseRequest implements Serializable
         this.status = status;
     }
     
-    public String getRenewalReason()
-    {
-        return renewalReason;
-    }
-    
-    public void setRenewalReason(String renewalReason)
-    {
-        this.renewalReason = renewalReason;
-    }
-    
-    public String getReplacementReason()
-    {
-        return replacementReason;
-    }
-    
-    public void setReplacementReason(String replacementReason)
-    {
-        this.replacementReason = replacementReason;
-    }
-    
     public ApplicantDetails getApplicantDetails()
     {
         return applicantDetails;
@@ -100,7 +75,7 @@ public class BaseRequest implements Serializable
     public LocalDateTime getRecordCreationDate()
     {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-      
+        
         return LocalDateTime.parse(recordCreationDate, dtf);
     }
     
@@ -109,6 +84,20 @@ public class BaseRequest implements Serializable
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         
         return LocalDateTime.parse(lastEditDate, dtf);
+    }
+    
+    public int getStatusColor()
+    {
+        switch (RequestStatus.valueOf(getStatus().toUpperCase()))
+        {
+            case PENDING:
+                return Color.rgb(220, 190, 22);
+            case APPROVED:
+                return Color.rgb(125, 189, 0);
+            case DISAPPROVED:
+                return Color.rgb(255, 91, 0);
+        }
+        return Color.rgb(88, 180, 222);
     }
     
     public User getUser()
@@ -131,63 +120,23 @@ public class BaseRequest implements Serializable
         this.imageAttachment = imageAttachment;
     }
     
-    public String getTachCardIssuingCountry()
+    public CardRenewalsDetails getRenewalDetails()
     {
-        return tachCardIssuingCountry;
+        return renewalDetails;
     }
     
-    public void setTachCardIssuingCountry(String tachCardIssuingCountry)
+    public void setRenewalDetails(CardRenewalsDetails renewalDetails)
     {
-        this.tachCardIssuingCountry = tachCardIssuingCountry;
+        this.renewalDetails = renewalDetails;
     }
     
-    public String getTachCardNumber()
+    public CardReplacementsDetails getReplacementDetails()
     {
-        return tachCardNumber;
+        return replacementDetails;
     }
     
-    public void setTachCardNumber(String tachCardNumber)
+    public void setReplacementDetails(CardReplacementsDetails replacementDetails)
     {
-        this.tachCardNumber = tachCardNumber;
-    }
-    
-    public String getDrivingLicIssuingCountry()
-    {
-        return drivingLicIssuingCountry;
-    }
-    
-    public void setDrivingLicIssuingCountry(String drivingLicIssuingCountry)
-    {
-        this.drivingLicIssuingCountry = drivingLicIssuingCountry;
-    }
-    
-    public String getDrivingLicNumber()
-    {
-        return drivingLicNumber;
-    }
-    
-    public void setDrivingLicNumber(String drivingLicNumber)
-    {
-        this.drivingLicNumber = drivingLicNumber;
-    }
-    
-    public String getReplacementIncidentDate()
-    {
-        return replacementIncidentDate;
-    }
-    
-    public void setReplacementIncidentDate(String replacementIncidentDate)
-    {
-        this.replacementIncidentDate = replacementIncidentDate;
-    }
-    
-    public String getReplacementIncidentPlace()
-    {
-        return replacementIncidentPlace;
-    }
-    
-    public void setReplacementIncidentPlace(String replacementIncidentPlace)
-    {
-        this.replacementIncidentPlace = replacementIncidentPlace;
+        this.replacementDetails = replacementDetails;
     }
 }

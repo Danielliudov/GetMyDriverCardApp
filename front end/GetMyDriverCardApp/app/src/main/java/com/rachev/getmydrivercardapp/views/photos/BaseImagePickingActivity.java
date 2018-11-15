@@ -1,8 +1,7 @@
-package com.rachev.getmydrivercardapp.views.photos.base;
+package com.rachev.getmydrivercardapp.views.photos;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -12,9 +11,10 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import com.rachev.getmydrivercardapp.R;
 import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.Methods;
+import com.rachev.getmydrivercardapp.views.BaseActivity;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public abstract class BaseImagePickingActivity extends AppCompatActivity
+public abstract class BaseImagePickingActivity extends BaseActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)

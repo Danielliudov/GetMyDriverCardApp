@@ -61,35 +61,27 @@ public class RequestsApiController
     
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/secured/update")
-    public ResponseEntity<String> updateRequestStatus(@RequestBody BaseRequest baseRequest)
+    public ResponseEntity<String> updateRequestStatus(@RequestBody BaseRequest baseRequest) throws JSONException
     {
-        requestsService.updateRequestStatus(baseRequest.getId(), baseRequest.getStatus());
+        requestsService.add(baseRequest);
         
-        HttpEntity<String> request = null;
-        try
-        {
-            JSONObject body = new JSONObject();
-            body.put("to", "/topics/" + baseRequest.getUser().getUsername());
-            body.put("priority", "high");
-            
-            JSONObject notification = new JSONObject();
-            notification.put("title", "Driver card application update");
-            notification.put("body", "The status of your request with number " +
-                    baseRequest.getId() + " was just changed to " + baseRequest.getStatus());
-            
-            JSONObject data = new JSONObject();
-            data.put("username", baseRequest.getUser().getUsername());
-            data.put("request_id", baseRequest.getId());
-            data.put("request_status", baseRequest.getStatus());
-            
-            body.put("notification", notification);
-            body.put("data", data);
-            
-            request = new HttpEntity<>(body.toString());
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
+        JSONObject body = new JSONObject();
+        body.put("to", "/topics/" + baseRequest.getUser().getUsername());
+        body.put("priority", "high");
+        
+        JSONObject notification = new JSONObject();
+        notification.put("title", "Driver card application update");
+        notification.put("body", "Your card request status is now -> " + baseRequest.getStatus());
+        
+        JSONObject data = new JSONObject();
+        data.put("username", baseRequest.getUser().getUsername());
+        data.put("request_id", baseRequest.getId());
+        data.put("request_status", baseRequest.getStatus());
+        
+        body.put("notification", notification);
+        body.put("data", data);
+        
+        HttpEntity<String> request = new HttpEntity<>(body.toString());
         
         CompletableFuture<String> pushNotification = androidPushNotificationsService.send(request);
         CompletableFuture.allOf(pushNotification).join();

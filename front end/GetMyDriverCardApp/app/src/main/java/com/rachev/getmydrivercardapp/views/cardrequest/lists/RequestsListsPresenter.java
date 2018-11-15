@@ -7,6 +7,7 @@ import com.rachev.getmydrivercardapp.async.base.SchedulerProvider;
 import com.rachev.getmydrivercardapp.models.BaseRequest;
 import com.rachev.getmydrivercardapp.services.base.RequestsService;
 import com.rachev.getmydrivercardapp.utils.Methods;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 
@@ -46,8 +47,9 @@ public class RequestsListsPresenter implements RequestsListsContracts.Presenter
                 .observeOn(mSchedulerProvider.ui())
                 .doFinally(mView::hideProgressBar)
                 .subscribe(this::presentRequestsToView,
-                        e -> Methods.showToast(mView.getActivity(),
-                                e.getMessage(), true));
+                        e -> Methods.showCrouton(mView.getActivity(),
+                                e.getMessage(), Style.ALERT,
+                                true));
     }
     
     @SuppressLint("CheckResult")
@@ -66,6 +68,25 @@ public class RequestsListsPresenter implements RequestsListsContracts.Presenter
                 .observeOn(mSchedulerProvider.ui())
                 .doFinally(mView::hideProgressBar)
                 .subscribe(this::presentRequestsToView,
+                        e -> presentRequestsToView(null));
+    }
+    
+    @SuppressLint("CheckResult")
+    @Override
+    public void updateRequestStatus(BaseRequest request)
+    {
+        mView.showProgressBar();
+        Observable.create((ObservableOnSubscribe<BaseRequest>) emitter ->
+        {
+            mRequestsService.updateStatus(request);
+            
+            emitter.onNext(request);
+            emitter.onComplete();
+        })
+                .subscribeOn(mSchedulerProvider.background())
+                .observeOn(mSchedulerProvider.ui())
+                .doFinally(mView::hideProgressBar)
+                .subscribe(r -> mView.finalizeStatusChange(r),
                         e -> presentRequestsToView(null));
     }
     

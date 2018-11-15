@@ -28,6 +28,8 @@
         <mapping class="com.rachev.getmydrivercardbackend.models.ImageAttachment" />
         <mapping class="com.rachev.getmydrivercardbackend.models.User" />
         <mapping class="com.rachev.getmydrivercardbackend.models.Role" />
+        <mapping class="com.rachev.getmydrivercardbackend.models.CardRenewalsDetails" />
+        <mapping class="com.rachev.getmydrivercardbackend.models.CardReplacementsDetails" />
 
     </session-factory>
 </hibernate-configuration>

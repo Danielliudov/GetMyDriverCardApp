@@ -1,6 +1,7 @@
 package com.rachev.getmydrivercardapp.views.cardrequest.lists;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +69,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.ItemVi
     
     public void sortByDate()
     {
-        mRequests.sort(Comparator.comparing(BaseRequest::getRecordCreationDate));
+        mRequests.sort(Comparator.comparing(BaseRequest::getId));
         notifyDataSetChanged();
     }
     
@@ -114,6 +115,9 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.ItemVi
         
         @BindView(R.id.request_status)
         TextView mStatus;
+    
+        @BindView(R.id.card_view)
+        CardView mCardView;
         
         private BaseRequest mRequest;
         private OnItemClickListener mOnClickListener;
@@ -131,6 +135,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.ItemVi
             mId.setText(String.format("Request ID: %s", String.valueOf(mRequest.getId())));
             mType.setText(String.format("Type: %s", mRequest.getType()));
             mStatus.setText(String.format("Status: %s", mRequest.getStatus()));
+            mCardView.setBackgroundColor(mRequest.getStatusColor());
         }
         
         @OnClick

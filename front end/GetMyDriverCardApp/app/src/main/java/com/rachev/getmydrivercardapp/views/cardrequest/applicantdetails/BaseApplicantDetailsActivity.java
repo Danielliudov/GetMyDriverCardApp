@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -17,11 +16,10 @@ import butterknife.ButterKnife;
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.rachev.getmydrivercardapp.R;
-import com.rachev.getmydrivercardapp.models.ApplicantDetails;
-import com.rachev.getmydrivercardapp.models.BaseRequest;
-import com.rachev.getmydrivercardapp.models.User;
+import com.rachev.getmydrivercardapp.models.*;
 import com.rachev.getmydrivercardapp.utils.Methods;
 import com.rachev.getmydrivercardapp.utils.enums.RequestStatus;
+import com.rachev.getmydrivercardapp.views.BaseActivity;
 import com.rachev.getmydrivercardapp.views.photos.SelfiePickingActivity;
 
 import java.text.ParseException;
@@ -29,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class BaseApplicantDetailsActivity extends AppCompatActivity implements View.OnClickListener
+public class BaseApplicantDetailsActivity extends BaseActivity implements View.OnClickListener
 {
     private AwesomeValidation mAwesomeValidation;
     private RequestStatus mRequestStatus;
@@ -41,6 +39,10 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
     private String mDrivingLicNumber;
     private String mReplacementIncidentDate;
     private String mReplacementIncidentPlace;
+    private String mRenewalFirstName;
+    private String mRenewalMiddleName;
+    private String mRenewalLastName;
+    private String mRenewalAddress;
     
     @BindView(R.id.scroll_view)
     ScrollView mScrollView;
@@ -91,6 +93,8 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
         mNextButton.setOnClickListener(this);
         
         addValidations(this);
+        
+        handleAllExtras();
     }
     
     private void handleAllExtras()
@@ -100,7 +104,20 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
             case "new":
                 break;
             case "renew":
-                this.mRenewalReason = getIntent().getStringExtra("renewal_reason");
+                String renewalReason = getIntent().getStringExtra("renewal_reason");
+                this.mRenewalReason = renewalReason;
+                
+                if (renewalReason.equals("change_name"))
+                {
+                    String[] name = getIntent().getStringArrayExtra("new_name");
+                    if (name[0] != null)
+                        mRenewalFirstName = name[0];
+                    if (name[1] != null)
+                        mRenewalMiddleName = name[1];
+                    if (name[2] != null)
+                        mRenewalLastName = name[2];
+                } else if (renewalReason.equals("change_address"))
+                    mRenewalAddress = getIntent().getStringExtra("new_address");
                 break;
             case "replace":
                 String replacementReason = getIntent().getStringExtra("replacement_reason");
@@ -222,15 +239,17 @@ public class BaseApplicantDetailsActivity extends AppCompatActivity implements V
                             details);
                     
                     if (mRenewalReason != null)
-                        baseRequest.setRenewalReason(mRenewalReason);
-                    if (mReplacementReason != null)
-                        baseRequest.setReplacementReason(mReplacementReason);
-                    baseRequest.setTachCardIssuingCountry(mTachCardIssuingCountry);
-                    baseRequest.setTachCardNumber(mTachCardNumber);
-                    baseRequest.setDrivingLicIssuingCountry(mDrivingLicIssuingCountry);
-                    baseRequest.setDrivingLicNumber(mDrivingLicNumber);
-                    baseRequest.setReplacementIncidentDate(mReplacementIncidentDate);
-                    baseRequest.setReplacementIncidentPlace(mReplacementIncidentPlace);
+                    {
+                        CardRenewalsDetails renewal = new CardRenewalsDetails(mRenewalReason,
+                                mRenewalFirstName, mRenewalMiddleName, mRenewalLastName, mRenewalAddress);
+                        baseRequest.setRenewalDetails(renewal);
+                    } else if (mReplacementReason != null)
+                    {
+                        CardReplacementsDetails replacement = new CardReplacementsDetails(mReplacementReason,
+                                mTachCardIssuingCountry, mTachCardNumber, mDrivingLicIssuingCountry,
+                                mDrivingLicNumber, mReplacementIncidentDate, mReplacementIncidentPlace);
+                        baseRequest.setReplacementDetails(replacement);
+                    }
                     
                     Intent intent = new Intent(this, SelfiePickingActivity.class);
                     intent.putExtra("request", baseRequest);

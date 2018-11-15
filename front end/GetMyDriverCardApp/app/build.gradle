@@ -54,17 +54,12 @@ dependencies {
 
     implementation 'com.karumi:dexter:5.0.0'
 
-    implementation 'org.parceler:parceler-api:1.1.11'
-    annotationProcessor 'org.parceler:parceler:1.1.11'
-
     implementation('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
         exclude group: 'com.google.android', module: 'support-v4'
     }
 
     implementation 'com.google.firebase:firebase-core:16.0.5'
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
-
-    implementation "com.github.mklimek:ssl-utils-android:1.0.1"
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient-android', version: '4.3.5.1'
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
@@ -74,6 +69,8 @@ dependencies {
     implementation 'org.springframework.android:spring-android-rest-template:2.0.0.M3'
     implementation 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
+
+    implementation 'net.alhazmy13.MediaPicker:libary:2.4.4'
 
     implementation 'com.github.thyrlian:AwesomeValidation:v4.2'
 

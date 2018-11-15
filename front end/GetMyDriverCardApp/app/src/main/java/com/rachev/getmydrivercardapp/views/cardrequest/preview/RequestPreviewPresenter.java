@@ -32,7 +32,7 @@ public class RequestPreviewPresenter implements RequestPreviewContracts.Presente
     
     @SuppressLint("CheckResult")
     @Override
-    public void createRequest(BaseRequest baseRequest, boolean existsAndToBeUpdated)
+    public void createRequest(BaseRequest baseRequest)
     {
         mView.showProgressBar();
         Observable.create((ObservableOnSubscribe<BaseRequest>) emitter ->
@@ -45,7 +45,7 @@ public class RequestPreviewPresenter implements RequestPreviewContracts.Presente
                 .subscribeOn(mSchedulerProvider.background())
                 .observeOn(mSchedulerProvider.ui())
                 .doFinally(mView::hideProgressBar)
-                .subscribe(r -> mNavigator.navigateToHome(r, existsAndToBeUpdated),
+                .subscribe(r -> mNavigator.navigateToHome(r),
                         err -> Methods.showToast(mView.getActivity(),
                                 err.getMessage(), true));
     }

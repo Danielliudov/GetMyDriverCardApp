@@ -23,14 +23,14 @@ public interface RequestPreviewContracts
         
         void setExtraTextViews();
         
-        void navigateToHome(BaseRequest request, boolean existsAndToBeUpdated);
+        void navigateToHome(BaseRequest request);
     }
     
     interface Presenter
     {
         void subscribe(View view);
     
-        void createRequest(BaseRequest baseRequest, boolean existsAndToBeUpdated);
+        void createRequest(BaseRequest baseRequest);
     
         void updateStatus(BaseRequest baseRequest);
         
@@ -39,6 +39,6 @@ public interface RequestPreviewContracts
     
     interface Navigator
     {
-        void navigateToHome(BaseRequest request, boolean existsAndToBeUpdated);
+        void navigateToHome(BaseRequest request);
     }
 }

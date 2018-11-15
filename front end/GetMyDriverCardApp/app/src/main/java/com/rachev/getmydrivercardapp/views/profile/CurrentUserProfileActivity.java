@@ -1,10 +1,10 @@
 package com.rachev.getmydrivercardapp.views.profile;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import com.rachev.getmydrivercardapp.R;
+import com.rachev.getmydrivercardapp.views.BaseActivity;
 
-public class CurrentUserProfileActivity extends AppCompatActivity
+public class CurrentUserProfileActivity extends BaseActivity
 {
     
     @Override

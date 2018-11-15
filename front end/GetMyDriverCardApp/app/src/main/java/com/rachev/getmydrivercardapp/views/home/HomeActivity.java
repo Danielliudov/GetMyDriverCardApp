@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.*;
@@ -19,9 +18,11 @@ import com.rachev.getmydrivercardapp.R;
 import com.rachev.getmydrivercardapp.models.User;
 import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.Methods;
+import com.rachev.getmydrivercardapp.views.BaseActivity;
 import com.rachev.getmydrivercardapp.views.cardrequest.applicantdetails.BaseApplicantDetailsActivity;
 import com.rachev.getmydrivercardapp.views.cardrequest.lists.RequestsListsActivity;
 import com.rachev.getmydrivercardapp.views.login.LoginActivity;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import studios.codelight.smartloginlibrary.LoginType;
 import studios.codelight.smartloginlibrary.SmartLogin;
 import studios.codelight.smartloginlibrary.SmartLoginFactory;
@@ -30,7 +31,7 @@ import studios.codelight.smartloginlibrary.users.SmartFacebookUser;
 import studios.codelight.smartloginlibrary.users.SmartGoogleUser;
 import studios.codelight.smartloginlibrary.users.SmartUser;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener
+public class HomeActivity extends BaseActivity implements View.OnClickListener
 {
     private User mCurrentUser;
     
@@ -81,9 +82,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         
         if (getIntent().getBooleanExtra("hasLoggedIn", false))
         {
-            Methods.showToast(this,
+            Methods.showCrouton(this,
                     Constants.Strings.USER_LOGGED_IN,
-                    false);
+                    Style.CONFIRM, false);
             mCurrentUser = (User) getIntent().getSerializableExtra("user");
             setTitle("User: " + mCurrentUser.getUsername());
             
@@ -135,6 +136,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 
                 intent[0] = new Intent(HomeActivity.this,
                         BaseApplicantDetailsActivity.class);
+                intent[0].setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent[0].putExtra("user", mCurrentUser);
                 
                 new AlertDialog.Builder(this)
@@ -182,9 +184,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                                         break;
                                                     case "Change of name":
                                                         intent[0].putExtra("renewal_reason", "change_name");
+                                                        String[] newName = getRenewalNameStringExtra();
+                                                        intent[0].putExtra("new_name", newName);
                                                         break;
                                                     case "Change of address":
                                                         intent[0].putExtra("renewal_reason", "change_address");
+                                                        String newAddres = getRenewalAddressStringExtra();
+                                                        intent[0].putExtra("new_address", newAddres);
                                                         break;
                                                 }
                                                 startActivity(intent[0]);
@@ -223,7 +229,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                                     case "Lost":
                                                         intent[0].putExtra("replacement_reason", "lost");
                                                         String[] extras1 = getLostOrStolenExtraDialogData();
-                                                        intent[0].putExtra("incident", extras1);
+                                                        intent[0].putExtra("incident_extras", extras1);
                                                         break;
                                                     case "Stolen":
                                                         intent[0].putExtra("replacement_reason", "stolen");
@@ -256,32 +262,142 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent[0]);
                 break;
             case R.id.logout_button:
-                SmartUser currentUser = UserSessionManager.getCurrentUser(this);
-                SmartLogin smartLogin;
-                
-                if (currentUser instanceof SmartFacebookUser)
-                    smartLogin = SmartLoginFactory.build(LoginType.Facebook);
-                else if (currentUser instanceof SmartGoogleUser)
-                    smartLogin = SmartLoginFactory.build(LoginType.Google);
-                else
-                    smartLogin = SmartLoginFactory.build(LoginType.CustomLogin);
-                
-                smartLogin.logout(getApplicationContext());
-                
-                intent[0] = new Intent(this, LoginActivity.class);
-                intent[0].setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent[0].putExtra("isHomeOrigin", true);
-                intent[0].putExtra("hasLoggedOut", true);
-                startActivity(intent[0]);
-                finish();
-                GetMyDriverCardApplication.getCookieJar(this).clear();
+                new android.support.v7.app.AlertDialog.Builder(this).
+                        setMessage("Are you sure you want to log out?")
+                        .setPositiveButton("Yes", (dialog, which) ->
+                        {
+                            SmartUser currentUser = UserSessionManager.getCurrentUser(this);
+                            SmartLogin smartLogin;
+                            
+                            if (currentUser instanceof SmartFacebookUser)
+                                smartLogin = SmartLoginFactory.build(LoginType.Facebook);
+                            else if (currentUser instanceof SmartGoogleUser)
+                                smartLogin = SmartLoginFactory.build(LoginType.Google);
+                            else
+                                smartLogin = SmartLoginFactory.build(LoginType.CustomLogin);
+                            
+                            smartLogin.logout(getApplicationContext());
+                            
+                            intent[0] = new Intent(this, LoginActivity.class);
+                            intent[0].setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent[0].putExtra("isHomeOrigin", true);
+                            intent[0].putExtra("hasLoggedOut", true);
+                            startActivity(intent[0]);
+                            finish();
+                            GetMyDriverCardApplication.getCookieJar(this).clear();
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                        .setCancelable(true)
+                        .create()
+                        .show();
                 break;
             default:
                 break;
         }
     }
     
-
+    private String[] getRenewalNameStringExtra()
+    {
+        Context context = getApplicationContext();
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        
+        final EditText newFirstName = new EditText(context);
+        newFirstName.setHint("New first name");
+        newFirstName.setTextColor(getColor(R.color.primaryColorLime));
+        newFirstName.setHintTextColor(getColor(R.color.primaryColorLime));
+        layout.addView(newFirstName);
+        
+        final EditText newMidleName = new EditText(context);
+        newMidleName.setHint("New middle name");
+        newMidleName.setTextColor(getColor(R.color.primaryColorLime));
+        newMidleName.setHintTextColor(getColor(R.color.primaryColorLime));
+        layout.addView(newMidleName);
+        
+        final EditText newLastName = new EditText(context);
+        newLastName.setHint("New last name");
+        newLastName.setTextColor(getColor(R.color.primaryColorLime));
+        newLastName.setHintTextColor(getColor(R.color.primaryColorLime));
+        layout.addView(newLastName);
+        
+        @SuppressLint("HandlerLeak") final Handler handler = new Handler()
+        {
+            @Override
+            public synchronized void handleMessage(Message msg)
+            {
+                throw new RuntimeException();
+            }
+        };
+        
+        final String[] data = new String[3];
+        new AlertDialog.Builder(this)
+                .setTitle("Provide you new names[only fill changed names(other leave blank)]")
+                .setView(layout)
+                .setPositiveButton("Next", (dialog, which) ->
+                {
+                    data[0] = ((EditText) layout.getChildAt(0)).getText().toString();
+                    data[1] = ((EditText) layout.getChildAt(0)).getText().toString();
+                    data[2] = ((EditText) layout.getChildAt(0)).getText().toString();
+                    handler.sendMessage(handler.obtainMessage());
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+        
+        try
+        {
+            Looper.loop();
+        } catch (RuntimeException ignored)
+        {
+        }
+        
+        return data;
+    }
+    
+    private String getRenewalAddressStringExtra()
+    {
+        Context context = getApplicationContext();
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        
+        final EditText renewalBox = new EditText(context);
+        renewalBox.setHint("New address");
+        renewalBox.setTextColor(getColor(R.color.primaryColorLime));
+        renewalBox.setHintTextColor(getColor(R.color.primaryColorLime));
+        layout.addView(renewalBox);
+        
+        @SuppressLint("HandlerLeak") final Handler handler = new Handler()
+        {
+            @Override
+            public synchronized void handleMessage(Message msg)
+            {
+                throw new RuntimeException();
+            }
+        };
+        
+        final String[] data = {null};
+        new AlertDialog.Builder(this)
+                .setTitle("Provide your new details")
+                .setView(layout)
+                .setPositiveButton("Next", (dialog, which) ->
+                {
+                    data[0] = ((EditText) layout.getChildAt(0)).getText().toString();
+                    handler.sendMessage(handler.obtainMessage());
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+        
+        try
+        {
+            Looper.loop();
+        } catch (RuntimeException ignored)
+        {
+        }
+        
+        return data[0];
+    }
+    
     private String[] getLostOrStolenExtraDialogData()
     {
         Context context = getApplicationContext();
@@ -296,21 +412,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         
         final EditText placeBox = new EditText(context);
         placeBox.setHint("Place");
-        dateBox.setTextColor(getColor(R.color.primaryColorLime));
+        placeBox.setTextColor(getColor(R.color.primaryColorLime));
         placeBox.setHintTextColor(getColor(R.color.primaryColorLime));
         layout.addView(placeBox);
         
         @SuppressLint("HandlerLeak") final Handler handler = new Handler()
         {
             @Override
-            public void handleMessage(Message mesg)
+            public synchronized void handleMessage(Message msg)
             {
                 throw new RuntimeException();
             }
         };
         
-        String[] data = new String[2];
-        
+        final String[] data = new String[2];
         new AlertDialog.Builder(this)
                 .setTitle("Provide information about the incident")
                 .setView(layout)
@@ -367,14 +482,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         @SuppressLint("HandlerLeak") final Handler handler = new Handler()
         {
             @Override
-            public void handleMessage(Message mesg)
+            public synchronized void handleMessage(Message msg)
             {
                 throw new RuntimeException();
             }
         };
         
-        String[] data = new String[4];
-        
+        final String[] data = new String[4];
         new AlertDialog.Builder(this)
                 .setTitle("Provide information about the incident")
                 .setView(layout)

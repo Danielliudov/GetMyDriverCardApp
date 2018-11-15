@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <service
-            android:name=".services.notifications.MyFirebaseMessagingService"
+            android:name=".services.MyFirebaseMessagingService"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -52,7 +52,7 @@
             android:name=".views.photos.SelfiePickingActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".views.photos.EnclosedAttachmentsPickingActivity"
+            android:name=".views.photos.IdCardPickingActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".views.signature.SignatureActivity"
@@ -60,7 +60,6 @@
         <activity
             android:name=".views.home.HomeActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".views.StartActivity" />
         <activity
             android:name=".views.cardrequest.applicantdetails.BaseApplicantDetailsActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />

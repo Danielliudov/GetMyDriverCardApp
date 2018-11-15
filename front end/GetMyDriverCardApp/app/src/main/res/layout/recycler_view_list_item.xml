@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="90dp"
-            android:textColor="@color/primaryLightColorAmber"
+            android:textColor="@color/primaryDarkColorBlue"
             android:textSize="20sp"
             android:textStyle="bold"
             todo_card:ignore="RtlSymmetry" />
@@ -43,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="90dp"
-            android:textColor="@color/primaryLightColorAmber"
+            android:textColor="@color/primaryDarkColorBlue"
             android:textSize="20sp"
             android:textStyle="bold"
             todo_card:ignore="RtlSymmetry" />
@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="90dp"
-            android:textColor="@color/primaryLightColorAmber"
+            android:textColor="@color/primaryDarkColorBlue"
             android:textSize="20sp"
             android:textStyle="bold"
             todo_card:ignore="RtlSymmetry" />

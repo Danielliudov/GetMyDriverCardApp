@@ -50,6 +50,28 @@ create table attachments
     prev_driver_card_pic longtext default null
 );
 
+create table card_renewals_details
+(
+	renewal_id int not null auto_increment primary key,
+    renewal_reason varchar(10) not null,
+    renewal_first_name varchar(50) default null,
+    renewal_middle_name varchar(50) default null,
+    renewal_last_name varchar(50) default null,
+    renewal_address varchar(100) default null
+);
+
+create table card_replacements_details
+(
+	replacement_id int not null auto_increment primary key,
+    replacement_reason varchar(10) not null,
+    prev_tach_card_country varchar(20) default null,
+    prev_tach_card_num varchar(50) default null,
+    driving_lic_country varchar(20) default null,
+    driving_lic_num varchar(20) default null,
+    replacement_incident_date varchar(20) default null,
+    replacement_incident_place varchar(20) default null
+);
+
 create table card_requests
 (
 	request_id int not null auto_increment primary key,
@@ -58,15 +80,11 @@ create table card_requests
     request_details_id int not null,
     request_attachment_id int not null,
     request_user_id int not null,
-    renewal_reason varchar(10) default null,
-    replacement_reason varchar(10) default null,
-    prev_tach_card_country varchar(20) default null,
-    prev_tach_card_num varchar(50) default null,
-    driving_lic_country varchar(20) default null,
-    driving_lic_num varchar(20) default null,
-    replacement_incident_date varchar(20) default null,
-    replacement_incident_place varchar(20) default null,
+	request_renewal_id int default null,
+    request_replacement_id int default null,
     constraint foreign key(request_details_id) references applicants_details(details_id),
     constraint foreign key(request_attachment_id) references attachments(attachment_id),
-    constraint foreign key(request_user_id) references users(user_id)
+    constraint foreign key(request_user_id) references users(user_id),
+    constraint foreign key(request_renewal_id) references card_renewals_details(renewal_id),
+    constraint foreign key(request_replacement_id) references card_replacements_details(replacement_id)
 );

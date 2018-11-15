@@ -31,12 +31,14 @@ public class BaseRequest extends BaseSqlEntity
     private String status;
     
     @Nullable
-    @Column(name = "renewal_reason")
-    private String renewalReason;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "request_renewal_id", referencedColumnName = "renewal_id")
+    private CardRenewalsDetails renewalsDetails;
     
     @Nullable
-    @Column(name = "replacement_reason")
-    private String replacementReason;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "request_replacement_id", referencedColumnName = "replacement_id")
+    private CardReplacementsDetails replacementsDetails;
     
     @NotNull
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -52,28 +54,4 @@ public class BaseRequest extends BaseSqlEntity
     @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "request_user_id", referencedColumnName = "user_id")
     private User user;
-    
-    @Nullable
-    @Column(name = "prev_tach_card_country")
-    private String tachCardIssuingCountry;
-    
-    @Nullable
-    @Column(name = "prev_tach_card_num")
-    private String tachCardNumber;
-    
-    @Nullable
-    @Column(name = "driving_lic_country")
-    private String drivingLicIssuingCountry;
-    
-    @Nullable
-    @Column(name = "driving_lic_num")
-    private String drivingLicNumber;
-    
-    @Nullable
-    @Column(name = "replacement_incident_date")
-    private String replacementIncidentDate;
-    
-    @Nullable
-    @Column(name = "replacement_incident_place")
-    private String replacementIncidentPlace;
 }

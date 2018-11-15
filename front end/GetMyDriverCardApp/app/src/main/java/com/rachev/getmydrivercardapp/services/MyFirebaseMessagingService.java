@@ -1,4 +1,4 @@
-package com.rachev.getmydrivercardapp.services.notifications;
+package com.rachev.getmydrivercardapp.services;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,16 +14,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.rachev.getmydrivercardapp.R;
-import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.enums.RequestStatus;
 import com.rachev.getmydrivercardapp.views.cardrequest.lists.RequestsListsActivity;
 
-import java.util.Random;
-
 public class MyFirebaseMessagingService extends FirebaseMessagingService
 {
-    private NotificationManager notificationManager;
-    
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage)
     {
@@ -33,10 +28,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 remoteMessage.getNotification().getBody());
         
         Intent intent = new Intent("REQUEST_ACCEPT");
-        intent.putExtra("requestId", Long.valueOf(remoteMessage.getData().get("requestId")));
-        intent.putExtra("requestStatus", RequestStatus.valueOf(remoteMessage.getData().get("requestStatus")));
+        intent.putExtra("request_id", Long.valueOf(remoteMessage.getData().get("request_id")));
+        intent.putExtra("request_status", RequestStatus.valueOf(
+                remoteMessage.getData().get("request_status").toUpperCase()));
         broadcaster.sendBroadcast(intent);
-        
     }
     
     private void sendNotification(String messageTitle, String messageBody)
@@ -47,13 +42,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                 0, intent, PendingIntent.FLAG_ONE_SHOT);
         
         String channelId = "Channel";
-        int notificationId = new Random().nextInt(Constants.Integers.NOTIFICATION_RANDOM_BOUND);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, Constants.Strings.ADMIN_CHANNEL_ID)
+                new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_shortcut_playlist_add_check)
                         .setContentTitle(messageTitle)
                         .setContentText(messageBody)
@@ -61,6 +53,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
                         .setColor(Color.CYAN)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
+        
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -71,6 +66,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
             notificationManager.createNotificationChannel(channel);
         }
         
-        notificationManager.notify(notificationId, notificationBuilder.build());
+        notificationManager.notify(0, notificationBuilder.build());
     }
 }

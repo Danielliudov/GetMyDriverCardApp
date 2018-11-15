@@ -13,17 +13,17 @@
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:text="@string/provide_a_relevant_facial_photo"
+        android:text="@string/provide_a_photo_of_your_id_card"
         android:textSize="40sp"
         android:textStyle="bold"
         android:textColor="@color/primaryColorLime"
-        android:gravity="center"/>
+        android:gravity="center" />
 
     <ImageView
         android:id="@+id/choosen_pic"
-        android:layout_width="250dp"
+        android:layout_width="312dp"
         android:layout_height="250dp"
-        android:src="@drawable/blank_selfie_placeholder"
+        android:src="@drawable/card"
         android:layout_gravity="center"
         android:layout_margin="20dp"
         android:visibility="visible"
@@ -36,7 +36,7 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/pick_bitmap"
+            android:id="@+id/pick_id_bitmap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

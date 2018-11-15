@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import butterknife.BindView;
@@ -23,6 +22,7 @@ import com.rachev.getmydrivercardapp.R;
 import com.rachev.getmydrivercardapp.models.BaseRequest;
 import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.Methods;
+import com.rachev.getmydrivercardapp.views.BaseActivity;
 import com.rachev.getmydrivercardapp.views.cardrequest.preview.RequestPreviewActivity;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -31,7 +31,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-public class SignatureActivity extends AppCompatActivity
+public class SignatureActivity extends BaseActivity
 {
     @BindView(R.id.signature_view)
     SignatureView mSignatureView;

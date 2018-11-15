@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
@@ -14,12 +13,11 @@ import com.rachev.getmydrivercardapp.R;
 import com.rachev.getmydrivercardapp.models.BaseRequest;
 import com.rachev.getmydrivercardapp.utils.Methods;
 import com.rachev.getmydrivercardapp.utils.enums.RequestStatus;
+import com.rachev.getmydrivercardapp.views.BaseActivity;
 import com.rachev.getmydrivercardapp.views.home.HomeActivity;
 
-public class RequestPreviewActivity extends AppCompatActivity
-        implements AdapterView.OnItemSelectedListener,
-        RequestPreviewContracts.View,
-        RequestPreviewContracts.Navigator
+public class RequestPreviewActivity extends BaseActivity implements AdapterView.OnItemSelectedListener,
+        RequestPreviewContracts.View, RequestPreviewContracts.Navigator
 {
     private static BaseRequest mFinalRequest;
     private RequestPreviewContracts.Presenter mPresenter;
@@ -66,6 +64,48 @@ public class RequestPreviewActivity extends AppCompatActivity
     @BindView(R.id.extra_details_replacement_view)
     LinearLayout mExtraDetailsReplacementLayout;
     
+    @BindView(R.id.extra_details_replacement_exchange_view)
+    LinearLayout mExtraDetailsReplacementExchangeLayout;
+    
+    @BindView(R.id.extra_details_replacement_incident_view)
+    LinearLayout mExtraDetailsReplacementIncidentLayout;
+    
+    @BindView(R.id.extra_details_renewal_name_view)
+    LinearLayout mExtraDetailsRenewalNameView;
+    
+    @BindView(R.id.extra_details_renewal_address_view)
+    LinearLayout mExtraDetailsRenewalAddressView;
+    
+    @BindView(R.id.renewal_fname_text)
+    TextView mExtraDetailsNewFirstNameText;
+    
+    @BindView(R.id.renewal_mname_text)
+    TextView mExtraDetailsNewMiddleText;
+    
+    @BindView(R.id.renewal_lname_text)
+    TextView mExtraDetailsNewLastNameText;
+    
+    @BindView(R.id.renewal_address_text)
+    TextView mExtraDetailsNewAddressText;
+    
+    @BindView(R.id.replacement_incident_date)
+    TextView mReplacementIncidentDateText;
+    
+    @BindView(R.id.replacement_incident_place)
+    TextView mReplacementIncidentPlaceText;
+    
+    @BindView(R.id.replacement_exchange_prev_card_country)
+    TextView mReplacementExchangePrevCardCountry;
+    
+    @BindView(R.id.replacement_exchange_prev_card_num)
+    TextView mReplacementExchangePrevCardNum;
+    
+    @BindView(R.id.replacement_exchange_driving_lic_countrty)
+    TextView mReplacementExchangeDrivingLicCountry;
+    
+    @BindView(R.id.replacement_exchange_driving_lic_num)
+    TextView getmReplacementExchangeDrivingLicNumber;
+    
     @BindView(R.id.renewal_reason_text)
     TextView mRenewalReasonText;
     
@@ -104,15 +144,17 @@ public class RequestPreviewActivity extends AppCompatActivity
         if (!getIntent().getBooleanExtra("isOriginList", false))
         {
             mFinalRequest = (BaseRequest) getIntent().getSerializableExtra("request");
-            mFinalRequest.getImageAttachment().setIdCardImage(
-                    Methods.encodeBitmapToBase64String(getIntent().getStringExtra("path1")));
-            mFinalRequest.getImageAttachment().setDriverLicenseImage(
-                    Methods.encodeBitmapToBase64String(getIntent().getStringExtra("path2")));
+            if (getIntent().getStringExtra("path1").length() > 0)
+                mFinalRequest.getImageAttachment().setIdCardImage(
+                        Methods.encodeBitmapToBase64String(getIntent().getStringExtra("path1")));
+            if (getIntent().getStringExtra("path2").length() > 0)
+                mFinalRequest.getImageAttachment().setDriverLicenseImage(
+                        Methods.encodeBitmapToBase64String(getIntent().getStringExtra("path2")));
             if (getIntent().getStringExtra("path3").length() > 0)
                 mFinalRequest.getImageAttachment().setPrevDriverCardImage(
                         Methods.encodeBitmapToBase64String(getIntent().getStringExtra("path3")));
             
-            mSendButton.setOnClickListener(v -> mPresenter.createRequest(mFinalRequest, false));
+            mSendButton.setOnClickListener(v -> mPresenter.createRequest(mFinalRequest));
         } else
         {
             mSendButton.setVisibility(View.GONE);
@@ -166,11 +208,71 @@ public class RequestPreviewActivity extends AppCompatActivity
             if (mFinalRequest.getType().equals("replace"))
             {
                 mExtraDetailsReplacementLayout.setVisibility(View.VISIBLE);
-                mReplacementReasonText.setText(String.format("Replacement reason: %s", mFinalRequest.getReplacementReason()));
+                
+                String reason = mFinalRequest.getReplacementDetails().getReplacementReason();
+                mReplacementReasonText.setText(String.format("Replacement reason: %s", reason));
+                if (reason.equals("lost") || reason.equals("stolen"))
+                {
+                    mExtraDetailsReplacementIncidentLayout.setVisibility(View.VISIBLE);
+                    mReplacementIncidentDateText.setText(String.format(
+                            "Incident date: %s", mFinalRequest.getReplacementDetails()
+                                    .getReplacementIncidentDate()));
+                    mReplacementIncidentPlaceText.setText(String.format(
+                            "Incident place: %s", mFinalRequest.getReplacementDetails()
+                                    .getReplacementIncidentPlace()));
+                } else if (reason.equals("exchange_for_bg_card"))
+                {
+                    mExtraDetailsReplacementExchangeLayout.setVisibility(View.VISIBLE);
+                    mReplacementExchangePrevCardCountry.setText(String.format(
+                            "Previous card country: %s", mFinalRequest.getReplacementDetails()
+                                    .getTachCardIssuingCountry()));
+                    mReplacementExchangePrevCardNum.setText(String.format(
+                            "Previous card number: %s", mFinalRequest.getReplacementDetails()
+                                    .getTachCardNumber()));
+                    mReplacementExchangeDrivingLicCountry.setText(String.format(
+                            "Driving license country: %s", mFinalRequest.getReplacementDetails()
+                                    .getDrivingLicIssuingCountry()));
+                    getmReplacementExchangeDrivingLicNumber.setText(String.format(
+                            "Driving license number: %s", mFinalRequest.getReplacementDetails()
+                                    .getDrivingLicNumber()));
+                }
             } else if (mFinalRequest.getType().equals("renewal"))
             {
                 mExtraDetailsRenewalLayout.setVisibility(View.VISIBLE);
-                mRenewalReasonText.setText(String.format("Renewal reason: %s", mFinalRequest.getRenewalReason()));
+                
+                String reason = mFinalRequest.getRenewalDetails().getRenewalReason();
+                mRenewalReasonText.setText(String.format("Renewal reason: %s", reason));
+                if (reason.equals("change_name"))
+                {
+                    mExtraDetailsRenewalNameView.setVisibility(View.VISIBLE);
+                    
+                    if (mFinalRequest.getRenewalDetails().getRenewalNewFirstName() != null)
+                        mExtraDetailsNewFirstNameText.setText(String.format(
+                                "New first name: %s", mFinalRequest.getRenewalDetails()
+                                        .getRenewalNewFirstName()));
+                    else
+                        mExtraDetailsNewFirstNameText.setVisibility(View.GONE);
+                    
+                    if (mFinalRequest.getRenewalDetails().getRenewalNewMiddleName() != null)
+                        mExtraDetailsNewMiddleText.setText(String.format(
+                                "New middle name: %s", mFinalRequest.getRenewalDetails()
+                                        .getRenewalNewMiddleName()));
+                    else
+                        mExtraDetailsNewMiddleText.setVisibility(View.GONE);
+                    
+                    if (mFinalRequest.getRenewalDetails().getRenewalNewLastName() != null)
+                        mExtraDetailsNewFirstNameText.setText(String.format(
+                                "New middle name: %s", mFinalRequest.getRenewalDetails()
+                                        .getRenewalNewLastName()));
+                    else
+                        mExtraDetailsNewLastNameText.setVisibility(View.GONE);
+                } else if (reason.equals("change_address"))
+                {
+                    mExtraDetailsRenewalAddressView.setVisibility(View.VISIBLE);
+                    mExtraDetailsNewAddressText.setText(String.format(
+                            "New address: %s", mFinalRequest.getRenewalDetails()
+                                    .getRenewalNewAddress()));
+                }
             }
         }
     }
@@ -263,7 +365,7 @@ public class RequestPreviewActivity extends AppCompatActivity
         mAdminPanelStatusText.setText(String.format(
                 "Request status: %s", parent.getItemAtPosition(position)));
         
-        switch (parent.getItemAtPosition(position).toString())
+        switch (parent.getItemAtPosition(position).toString().trim())
         {
             case "pending":
                 mFinalRequest.setStatus(RequestStatus.PENDING.toString());
@@ -276,7 +378,7 @@ public class RequestPreviewActivity extends AppCompatActivity
                 break;
         }
         
-        mPresenter.createRequest(mFinalRequest, true);
+        mPresenter.updateStatus(mFinalRequest);
     }
     
     @Override
@@ -286,23 +388,11 @@ public class RequestPreviewActivity extends AppCompatActivity
     }
     
     @Override
-    public void navigateToHome(BaseRequest request, boolean existsAndToBeUpdated)
+    public void navigateToHome(BaseRequest request)
     {
-        if (request != null)
-        {
-            if (existsAndToBeUpdated)
-            {
-                Methods.showToast(getApplicationContext(),
-                        "Request status updated",
-                        false);
-                finish();
-                return;
-            }
-            
-            Intent intent = new Intent(this, HomeActivity.class);
-            intent.putExtra("request_created", true);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("request_created", true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

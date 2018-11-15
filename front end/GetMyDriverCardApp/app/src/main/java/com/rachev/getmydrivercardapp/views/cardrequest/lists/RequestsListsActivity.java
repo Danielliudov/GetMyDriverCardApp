@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -22,11 +21,13 @@ import com.rachev.getmydrivercardapp.models.Role;
 import com.rachev.getmydrivercardapp.models.User;
 import com.rachev.getmydrivercardapp.utils.Methods;
 import com.rachev.getmydrivercardapp.utils.enums.RequestStatus;
+import com.rachev.getmydrivercardapp.views.BaseActivity;
 import com.rachev.getmydrivercardapp.views.cardrequest.preview.RequestPreviewActivity;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 import java.util.List;
 
-public class RequestsListsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
+public class RequestsListsActivity extends BaseActivity implements AdapterView.OnItemSelectedListener,
         RequestsAdapter.OnItemClickListener, RequestsListsContracts.View
 {
     RequestsListsContracts.Presenter mPresenter;
@@ -141,6 +142,16 @@ public class RequestsListsActivity extends AppCompatActivity implements AdapterV
     }
     
     @Override
+    public void finalizeStatusChange(BaseRequest baseRequest)
+    {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("request_id", baseRequest.getId());
+        returnIntent.putExtra("request_status", baseRequest.getStatus());
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+    
+    @Override
     public void showProgressBar()
     {
         mProgressBar.setVisibility(View.VISIBLE);
@@ -177,8 +188,8 @@ public class RequestsListsActivity extends AppCompatActivity implements AdapterV
         mSpinnerLayout.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.GONE);
         mEmptyListTextView.setVisibility(View.VISIBLE);
-        Methods.showToast(this, "Oops",
-                false);
+        Methods.showCrouton(this, "Oops",
+                Style.ALERT, false);
     }
     
     @Override

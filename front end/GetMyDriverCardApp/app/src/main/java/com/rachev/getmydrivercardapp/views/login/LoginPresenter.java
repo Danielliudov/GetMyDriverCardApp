@@ -8,6 +8,7 @@ import com.rachev.getmydrivercardapp.models.User;
 import com.rachev.getmydrivercardapp.services.base.UsersService;
 import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.Methods;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 
@@ -59,20 +60,20 @@ public class LoginPresenter implements LoginContracts.Presenter
                 {
                     if (u != null)
                     {
-                        Methods.showToast(mView.getActivity(),
+                        Methods.showCrouton(mView.getActivity(),
                                 Constants.Strings.USER_SIGNED_UP,
-                                true);
+                                Style.CONFIRM, true);
                         mNavigator.navigateToHome(u);
                     }
                 }, err ->
                 {
                     if (err instanceof IOException)
-                        Methods.showToast(mView.getActivity(),
+                        Methods.showCrouton(mView.getActivity(),
                                 Constants.Strings.CONNECTION_TO_SERVER_TIMED_OUT,
-                                true);
+                                Style.ALERT, true);
                     else
-                        Methods.showToast(mView.getActivity(),
-                                err.getMessage(), true);
+                        Methods.showCrouton(mView.getActivity(),
+                                err.getMessage(), Style.ALERT, true);
                 });
     }
     
@@ -82,9 +83,9 @@ public class LoginPresenter implements LoginContracts.Presenter
     {
         if (username.isEmpty() || password.isEmpty())
         {
-            Methods.showToast(mView.getActivity(),
+            Methods.showCrouton(mView.getActivity(),
                     Constants.Strings.NOT_ALL_FIELDS_FILLED,
-                    true);
+                    Style.ALERT, true);
             return;
         }
         
@@ -114,13 +115,13 @@ public class LoginPresenter implements LoginContracts.Presenter
                         e ->
                         {
                             if (e instanceof IllegalArgumentException)
-                                Methods.showToast(mView.getActivity(),
-                                        e.getMessage(),
+                                Methods.showCrouton(mView.getActivity(),
+                                        e.getMessage(), Style.ALERT,
                                         true);
                             else if (e instanceof IOException)
-                                Methods.showToast(mView.getActivity(),
+                                Methods.showCrouton(mView.getActivity(),
                                         Constants.Strings.CONNECTION_TO_SERVER_TIMED_OUT,
-                                        true);
+                                        Style.ALERT, true);
                         });
     }
 }

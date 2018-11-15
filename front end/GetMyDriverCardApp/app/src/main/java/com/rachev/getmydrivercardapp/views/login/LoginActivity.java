@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +20,9 @@ import com.rachev.getmydrivercardapp.models.Role;
 import com.rachev.getmydrivercardapp.models.User;
 import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.Methods;
+import com.rachev.getmydrivercardapp.views.BaseActivity;
 import com.rachev.getmydrivercardapp.views.home.HomeActivity;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import studios.codelight.smartloginlibrary.*;
 import studios.codelight.smartloginlibrary.users.SmartFacebookUser;
 import studios.codelight.smartloginlibrary.users.SmartGoogleUser;
@@ -31,7 +32,7 @@ import studios.codelight.smartloginlibrary.util.SmartLoginException;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class LoginActivity extends AppCompatActivity implements
+public class LoginActivity extends BaseActivity implements
         View.OnClickListener, SmartLoginCallbacks, LoginContracts.View, LoginContracts.Navigator
 {
     private SmartUser mCurrentUser;
@@ -91,9 +92,15 @@ public class LoginActivity extends AppCompatActivity implements
         mCurrentUser = UserSessionManager.getCurrentUser(this);
         
         if (getIntent().getBooleanExtra("hasLoggedOut", false))
-            Methods.showToast(this,
+            Methods.showCrouton(this,
                     Constants.Strings.USER_LOGGED_OUT,
-                    false);
+                    Style.INFO, false);
+    }
+    
+    @Override
+    protected void onLeaveThisActivity()
+    {
+    
     }
     
     @Override
@@ -103,9 +110,9 @@ public class LoginActivity extends AppCompatActivity implements
             super.onBackPressed();
         else
         {
-            Methods.showToast(this,
+            Methods.showCrouton(this,
                     Constants.Strings.SECOND_BACK_PRESS_TO_EXIT,
-                    false);
+                    Style.INFO, false);
             mBackPressedTimes = System.currentTimeMillis();
         }
     }
@@ -134,7 +141,7 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onLoginFailure(SmartLoginException e)
     {
-        Methods.showToast(this, e.getMessage(), true);
+        Methods.showCrouton(this, e.getMessage(), Style.ALERT, true);
     }
     
     @Override

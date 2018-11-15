@@ -47,4 +47,7 @@
     <string name="request_status">Request status: </string>
     <string name="test">Test</string>
     <string name="additional_info">Additional info</string>
+    <string name="provide_a_photo_of_your_driving_license">Provide a photo of your driving license</string>
+    <string name="provide_a_photo_of_your_id">Provide a photo of your ID</string>
+    <string name="provide_a_photo_of_your_id_card">Provide a photo of your ID card</string>
 </resources>

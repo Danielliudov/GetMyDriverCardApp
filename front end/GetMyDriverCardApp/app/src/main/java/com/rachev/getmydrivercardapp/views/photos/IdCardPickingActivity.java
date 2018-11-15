@@ -10,39 +10,40 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.rachev.getmydrivercardapp.R;
 import com.rachev.getmydrivercardapp.models.BaseRequest;
-import com.rachev.getmydrivercardapp.models.ImageAttachment;
 import com.rachev.getmydrivercardapp.utils.Constants;
 import com.rachev.getmydrivercardapp.utils.Methods;
+import com.rachev.getmydrivercardapp.views.signature.SignatureActivity;
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 
 import java.io.File;
 import java.util.List;
 
-public class SelfiePickingActivity extends BaseImagePickingActivity implements View.OnClickListener
+public class IdCardPickingActivity extends BaseImagePickingActivity implements View.OnClickListener
 {
     private BaseRequest mBaseRequest;
+    private File mIdPicFile;
     
-    @BindView(R.id.pick_bitmap)
-    Button mImagePickButton;
+    @BindView(R.id.pick_id_bitmap)
+    Button mIdImagePickButton;
+    
+    @BindView(R.id.choosen_pic)
+    ImageView mIdBitmapView;
     
     @BindView(R.id.btn_next)
     Button mNextButton;
-    
-    @BindView(R.id.choosen_pic)
-    ImageView mBitmapView;
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_selfie_picking);
-        setTitle("Step 2");
+        setContentView(R.layout.activity_id_card_picking);
+        setTitle("Step 3");
         
         ButterKnife.bind(this);
         
         mBaseRequest = (BaseRequest) getIntent().getSerializableExtra("request");
         
-        mImagePickButton.setOnClickListener(this);
+        mIdImagePickButton.setOnClickListener(this);
         mNextButton.setOnClickListener(this);
         
         getStoragePermission();
@@ -54,21 +55,19 @@ public class SelfiePickingActivity extends BaseImagePickingActivity implements V
         switch (requestCode)
         {
             case ImagePicker.IMAGE_PICKER_REQUEST_CODE:
-                mBitmapView.setVisibility(View.VISIBLE);
+                mIdBitmapView.setVisibility(View.VISIBLE);
                 
                 if (data == null)
                     return;
                 
                 List<String> paths = data.getStringArrayListExtra(ImagePicker.EXTRA_IMAGE_PATH);
-                
                 Bitmap bitmap = Methods.convertFileToBitmap(new File(paths.get(0)));
-                mBitmapView.setImageBitmap(bitmap);
-                ImageAttachment imageAttachment = new ImageAttachment();
-                imageAttachment.setSelfieImage(Methods.encodeBitmapToBase64String(
-                        Methods.convertBitmapToFile(bitmap, this,
-                                System.currentTimeMillis() + Constants.Strings.PNG_SUFFIX)
+                mIdBitmapView.setImageBitmap(bitmap);
+                mIdPicFile = Methods.convertBitmapToFile(bitmap, this,
+                        System.currentTimeMillis() + Constants.Strings.PNG_SUFFIX);
+                mBaseRequest.getImageAttachment().setIdCardImage(
+                        Methods.encodeBitmapToBase64String(mIdPicFile
                                 .getPath()));
-                mBaseRequest.setImageAttachment(imageAttachment);
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
@@ -81,8 +80,8 @@ public class SelfiePickingActivity extends BaseImagePickingActivity implements V
     {
         switch (v.getId())
         {
-            case R.id.pick_bitmap:
-                ImagePicker imagePicker = new ImagePicker.Builder(this)
+            case R.id.pick_id_bitmap:
+                new ImagePicker.Builder(this)
                         .mode(ImagePicker.Mode.CAMERA_AND_GALLERY)
                         .compressLevel(ImagePicker.ComperesLevel.MEDIUM)
                         .directory(ImagePicker.Directory.DEFAULT)
@@ -93,8 +92,11 @@ public class SelfiePickingActivity extends BaseImagePickingActivity implements V
                         .build();
                 break;
             case R.id.btn_next:
-                Intent intent = new Intent(this, IdCardPickingActivity.class);
+                Intent intent = new Intent(this, SignatureActivity.class);
                 intent.putExtra("request", mBaseRequest);
+                intent.putExtra("path1", mIdPicFile.getPath());
+                intent.putExtra("path2", "");
+                intent.putExtra("path3", "");
                 startActivity(intent);
                 break;
         }
